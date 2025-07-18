@@ -20,7 +20,7 @@ const (
 func parsePackage(data string) (int, time.Duration, error) {
 	dataSlice := strings.Split(data, ",")
 
-	if len(dataSlice) < 2 {
+	if len(dataSlice) != 2 {
 		return 0, 0, fmt.Errorf("reсeived slice has fewer than 2 items")
 	}
 
@@ -34,8 +34,8 @@ func parsePackage(data string) (int, time.Duration, error) {
 		return 0, 0, fmt.Errorf("cannot parse walk duration: %w", err)
 	}
 
-	if stepsCount == 0 || walkDuration == 0 {
-		return 0, 0, fmt.Errorf("steps count (%d) or wall duration (%d) cannot will be zero: %w", stepsCount, walkDuration, err)
+	if stepsCount <= 0 || walkDuration <= 0 {
+		return 0, 0, fmt.Errorf("steps count (%d) or wall duration (%d) cannot will be zero or negative value: %w", stepsCount, walkDuration, err)
 	}
 
 	return stepsCount, walkDuration, nil
@@ -60,9 +60,7 @@ func DayActionInfo(data string, weight, height float64) string {
 		log.Printf("failed receive spent calories (%f): %s\n", caloriesSpent, err)
 	}
 
-	dayInfoMessageTemplate := `Количество шагов: %d.
-		Дистанция составила %f км.
-		Вы сожгли %f ккал.`
+	dayInfoMessageTemplate := "Количество шагов: %d.\nДистанция составила %.2f км.\nВы сожгли %.2f ккал.\n"
 
 	return fmt.Sprintf(dayInfoMessageTemplate, stepsCount, walkDistance, caloriesSpent)
 }
